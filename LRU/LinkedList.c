@@ -22,10 +22,11 @@ struct node* insertFirst(char* value) {
     char inputBuffer[MAX_BUFFER_SIZE];
     //link->data = value;
     link->data = malloc(MAX_BUFFER_SIZE);
-    filePtr = fopen(value, "rb");
-    fread(link->data, MAX_BUFFER_SIZE, 1, filePtr);
+    //filePtr = fopen(value, "rb");
+    //fread(link->data, MAX_BUFFER_SIZE, 1, filePtr);
     // link->data = inputBuffer;
     // memset(inputBuffer, 0, 2048);
+    strcpy(link->data, value);
     if (head == NULL)
     {
         //printf("Hi\n");

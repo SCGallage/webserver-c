@@ -59,7 +59,8 @@ const char* get_content_type(const char* path) {
         if (strcmp(last_dot, ".jpeg") == 0) return "image/jpeg";
         if (strcmp(last_dot, ".jpg") == 0) return "image/jpeg";
         if (strcmp(last_dot, ".js") == 0) return "application/javascript";
-        
+        if (strcmp(last_dot, ".png") == 0) return "image/png";
+        if (strcmp(last_dot, ".txt") == 0) return "text/plain";
     }
     return "application/octet-stream";
     
@@ -253,7 +254,7 @@ void serve_resource(struct client_info *client, const char *path) {
 
         if (size <= BSIZE){
             //printf("Smaller!\n");
-            insert(full_path, full_path);
+            insert(full_path, buffer);
         }
 
         fclose(fp);

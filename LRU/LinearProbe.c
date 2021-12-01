@@ -76,7 +76,8 @@ struct node* insert(KEY key, char* value) {
     if (hashTable->usedBuckets >= MAX_CAPACITY)
     {
         printf("Cache Has Reached Maximum Capacity!\n");
-        return;
+        deleteLast();
+        // return;
     }
     
     if (hashTable->threshold < hashTable->usedBuckets)
@@ -86,27 +87,16 @@ struct node* insert(KEY key, char* value) {
     //printf("Offset: %d\n", offset);
     for (unsigned int i = offset, x = 1; ; i = normalizeIndex(offset + probe(x++)))
     {
-        // printf("Loop: %d\n", i);
-        if (hashTable->keys[i] != NULL)
-        {
-            // if (hashTable->keys[i] == key)
-            // {
-            //     struct node *oldVal = hashTable->values[i];
-            //     hashTable->values[i] = new_node;
-            //     break;
-            // }
-        } else {
-            hashTable->keys[i] = key;
-            // hashTable->values[i] = new_node;
-            hashTable->keyCount++;
-            hashTable->usedBuckets++;
-            //printf("reached!\n");
-            hashTable->values[i] = insertFirst(value);
-            //printf("reached!\n");
-            //displayAllNode();
-            //printf("----------------------------------\n");
-            break;
-        }
+        hashTable->keys[i] = key;
+        // hashTable->values[i] = new_node;
+        hashTable->keyCount++;
+        hashTable->usedBuckets++;
+        //printf("reached!\n");
+        hashTable->values[i] = insertFirst(value);
+        //printf("reached!\n");
+        //displayAllNode();
+        //printf("----------------------------------\n");
+        break;
     }
 }
 
@@ -162,26 +152,6 @@ bool keyExists(KEY key) {
         return true;
     return false;
 } 
-
-// struct LinkedList* values() {
-
-//     struct LinkedList *linkList = malloc(sizeof(LinkedList));
-
-//     for (int i = 0; i < capacity; i++)
-//     {
-//         if (hashTable->keys[i] != NULL) {
-//             //printf("Name: %s\n", hashTable->keys[i]);
-//             struct node *newNode = malloc(sizeof(node));
-//             newNode->data = hashTable->keys[i];
-//             newNode->next = NULL;
-//             newNode->previous = NULL;
-//             insertNode(newNode, linkList);
-//         }
-//     }
-
-//     return linkList;
-
-// }
 
 void displayArrayElements() {
 
