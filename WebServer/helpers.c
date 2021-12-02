@@ -21,7 +21,9 @@
 
 #define BSIZE 1024
 
-#include "../LRU/LinearProbe.c"
+#include "../LRU/HashTable.h"
+#include "../LRU/LinkedListStruct.h"
+
 
 struct client_info
 {
@@ -45,6 +47,7 @@ bool initialize = false;
 // void serve_resource(struct client_info *client, const char *path);
 static struct client_info *clients = 0;
 off_t fileSize(char* filePath);
+void create_request_head(int socket, size_t cl, const char *ct);
 
 const char* get_content_type(const char* path) {
     const char *last_dot = strrchr(path, '.');
@@ -186,31 +189,17 @@ void serve_resource(struct client_info *client, const char *path) {
     
     char full_path[128];
     sprintf(full_path, "public%s", path);
-
+    printf("Path: %s\n", full_path);
     printf("Bool: %d\n", keyExists(full_path));
 
     const char *ct = get_content_type(full_path);
 
     if (keyExists(full_path))
     {
-        //printf("reached!\n");
+        printf("Content Found In Cache.....\n");
         struct node *existing = get(full_path);
-        printf("Found: %s\n", existing->data);
-
-        sprintf(buffer, "HTTP/1.1 200 OK\r\n");
-        send(client->socket, buffer, strlen(buffer), 0);
-
-        sprintf(buffer, "Connection: close\r\n");
-        send(client->socket, buffer, strlen(buffer), 0);
-
-        sprintf(buffer, "Content-Length: %u\r\n", strlen(existing->data));
-        send(client->socket, buffer, strlen(buffer), 0);
-
-        sprintf(buffer, "Content-Type: %s\r\n", ct);
-        send(client->socket, buffer, strlen(buffer), 0);
-        
-        sprintf(buffer, "\r\n");
-        send(client->socket, buffer, strlen(buffer), 0);
+        //printf("Found: %s\n", existing->data);
+        create_request_head(client->socket, strlen(existing->data), ct);
 
         send(client->socket, existing->data, strlen(existing->data), 0);
     } else{
@@ -230,20 +219,7 @@ void serve_resource(struct client_info *client, const char *path) {
         size_t cl = ftell(fp);
         rewind(fp);
 
-        sprintf(buffer, "HTTP/1.1 200 OK\r\n");
-        send(client->socket, buffer, strlen(buffer), 0);
-
-        sprintf(buffer, "Connection: close\r\n");
-        send(client->socket, buffer, strlen(buffer), 0);
-
-        sprintf(buffer, "Content-Length: %u\r\n", cl);
-        send(client->socket, buffer, strlen(buffer), 0);
-
-        sprintf(buffer, "Content-Type: %s\r\n", ct);
-        send(client->socket, buffer, strlen(buffer), 0);
-        
-        sprintf(buffer, "\r\n");
-        send(client->socket, buffer, strlen(buffer), 0);
+        create_request_head(client->socket, cl, ct);
 
         int r = fread(buffer, 1, BSIZE, fp);
         while (r)
@@ -262,6 +238,23 @@ void serve_resource(struct client_info *client, const char *path) {
 
     drop_client(client);
     
+}
+
+void create_request_head(int socket, size_t cl, const char *ct) {
+        sprintf(buffer, "HTTP/1.1 200 OK\r\n");
+        send(socket, buffer, strlen(buffer), 0);
+
+        sprintf(buffer, "Connection: close\r\n");
+        send(socket, buffer, strlen(buffer), 0);
+
+        sprintf(buffer, "Content-Length: %u\r\n", cl);
+        send(socket, buffer, strlen(buffer), 0);
+
+        sprintf(buffer, "Content-Type: %s\r\n", ct);
+        send(socket, buffer, strlen(buffer), 0);
+        
+        sprintf(buffer, "\r\n");
+        send(socket, buffer, strlen(buffer), 0);
 }
 
 off_t fileSize(char* filePath) {

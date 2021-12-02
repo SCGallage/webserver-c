@@ -5,12 +5,8 @@
 
 FILE *filePtr;
 
-struct node
-{
-    struct node *previous;
-    struct node *next;
-    char *data;
-} node;
+#include "LinkedList.h"
+#include "LinkedListStruct.h"
 
 struct node *head = NULL;
 struct node *tail = NULL;
@@ -20,16 +16,11 @@ struct node* insertFirst(char* value) {
     struct node *link = malloc(sizeof(struct node));
 
     char inputBuffer[MAX_BUFFER_SIZE];
-    //link->data = value;
     link->data = malloc(MAX_BUFFER_SIZE);
-    //filePtr = fopen(value, "rb");
-    //fread(link->data, MAX_BUFFER_SIZE, 1, filePtr);
-    // link->data = inputBuffer;
-    // memset(inputBuffer, 0, 2048);
     strcpy(link->data, value);
+    printf("Inserting Element To Cache.....\n");
     if (head == NULL)
     {
-        //printf("Hi\n");
         tail = link;
     }
     if (head != NULL)
@@ -42,6 +33,7 @@ struct node* insertFirst(char* value) {
 }
 
 void deleteLast() {
+    printf("Evicting Last Element From Cache.....\n");
     struct node *last = tail;
     last->previous->next = NULL;
     tail = last->previous;
