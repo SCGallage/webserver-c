@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "LinkedList.c"
+//#include "LinkedList.c"
+#include "LinkedList.h"
+#include "LinkedListStruct.h"
 
 #define KEY char*
 #define CAPACITY 10
@@ -88,7 +90,6 @@ struct node* insert(KEY key, char* value) {
     for (unsigned int i = offset, x = 1; ; i = normalizeIndex(offset + probe(x++)))
     {
         hashTable->keys[i] = key;
-        // hashTable->values[i] = new_node;
         hashTable->keyCount++;
         hashTable->usedBuckets++;
         //printf("reached!\n");
